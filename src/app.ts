@@ -31,7 +31,8 @@ export function buildApp() {
       await new Promise<void>((resolve, reject) => {
         const writeStream = fs.createWriteStream(targetPath);
         file.file.pipe(writeStream);
-        file.file.on("end", () => resolve());
+        writeStream.on("finish", () => resolve());
+        writeStream.on("error", reject);
         file.file.on("error", reject);
       });
       importFilePath = targetPath;

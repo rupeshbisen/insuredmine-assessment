@@ -10,7 +10,7 @@
 
 ## Prerequisites
 - Node.js 20+
-- MongoDB running locally or remotely
+- MongoDB Atlas or local MongoDB
 
 ## Setup
 1. Copy `.env.example` to `.env` and update values.
@@ -22,10 +22,24 @@
    ```bash
    npm run build
    ```
-4. Run server:
+4. Run in development:
+   ```bash
+   npm run dev
+   ```
+5. Run in production mode:
    ```bash
    npm start
    ```
+
+## Environment
+Example `.env`:
+```env
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+PORT=3000
+DEFAULT_UPLOAD_PATH=C:\\Users\\rupes\\Downloads\\data-sheet - Node js Assesment (2) (1).csv
+CPU_THRESHOLD_PERCENT=70
+CPU_CHECK_INTERVAL_MS=5000
+```
 
 ## API Endpoints
 
@@ -39,6 +53,22 @@ Example JSON body:
 ```json
 {
   "filePath": "C:\\Users\\rupes\\Downloads\\data-sheet - Node js Assesment (2) (1).csv"
+}
+```
+
+Success response includes import summary:
+```json
+{
+   "message": "Import completed",
+   "summary": {
+      "totalRows": 1198,
+      "agents": 1,
+      "users": 100,
+      "accounts": 100,
+      "lobs": 8,
+      "carriers": 15,
+      "policies": 1198
+   }
 }
 ```
 
@@ -61,3 +91,10 @@ Body:
 ```
 
 The scheduler checks due items periodically and inserts the message into the `Message` collection at the scheduled time.
+
+## Postman Test Order
+1. `GET /health`
+2. `POST /api/upload`
+3. `GET /api/policies/search?username=<firstName>`
+4. `GET /api/policies/aggregate-by-user`
+5. `POST /api/messages/schedule`

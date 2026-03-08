@@ -22,11 +22,17 @@ export async function importPolicyFile(filePath: string): Promise<NonNullable<Im
     throw new Error(`File not found: ${filePath}`);
   }
 
-  // Worker is always in dist/workers after build (both dev and prod)
-  const workerFilePath = path.join(process.cwd(), "dist", "workers", "importWorker.js");
-  
-  if (!fs.existsSync(workerFilePath)) {
-    throw new Error(`Worker not found at ${workerFilePath}. Run 'npm run build' first.`);
+  const candidateWorkerPaths = [
+    path.join(process.cwd(), "dist", "workers", "importWorker.js"),
+    path.join(process.cwd(), "workers", "importWorker.js")
+  ];
+
+  const workerFilePath = candidateWorkerPaths.find((workerPath) => fs.existsSync(workerPath));
+
+  if (!workerFilePath) {
+    throw new Error(
+      `Worker not found. Checked: ${candidateWorkerPaths.join(", ")}. Run 'npm run build' from project root first.`
+    );
   }
 
   return new Promise((resolve, reject) => {
